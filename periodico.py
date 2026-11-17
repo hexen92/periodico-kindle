@@ -189,7 +189,8 @@ def datos_reales():
     for clave in ("columna1", "columna2", "columna3"):
         columnas.append({"seccion": s[clave]["nombre"], "noticias": noticias_de(s[clave], 5)})
     return {"principal": {**principal, "seccion": s["principal"]["nombre"]},
-            "columnas": columnas, "clima": clima()}
+            "columnas": columnas,
+            "clima": clima() if CONFIG.get("mostrar_clima", True) else None}
 
 
 def datos_ejemplo():
@@ -225,7 +226,7 @@ def datos_ejemplo():
                 {"titulo": "Pymes del sur acceden a nuevas líneas de crédito",
                  "resumen": "El programa prioriza a comercios y talleres con menos de cincuenta trabajadores."}]},
         ],
-        "clima": [{"dia": f"{DIAS_CORTOS[(hoy + dt.timedelta(i)).weekday()]} {(hoy + dt.timedelta(i)).day}",
+        "clima": None if not CONFIG.get("mostrar_clima", True) else [{"dia": f"{DIAS_CORTOS[(hoy + dt.timedelta(i)).weekday()]} {(hoy + dt.timedelta(i)).day}",
                    "icono": "☂☁⛅☀☀☂☁"[i], "temp": f"{6 + i % 3}° / {13 + i % 4}°"} for i in range(7)],
     }
 
@@ -247,7 +248,7 @@ def armar_html(datos, ancho_base, alto_base):
         + "</div>" for c in datos["columnas"])
     clima_html = "".join(f"""
       <div class="dia"><b>{e(d['dia'])}</b><span class="ico">{d['icono']}</span>{e(d['temp'])}</div>"""
-                         for d in datos["clima"]) or '<div class="dia">Clima no disponible</div>'
+                         for d in (datos["clima"] or [])) or '<div class="dia">Clima no disponible</div>'
 
     return f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -260,7 +261,8 @@ def armar_html(datos, ancho_base, alto_base):
   .cabecera {{ text-align: center; }}
   .titulo {{ font-family: 'UnifrakturMaguntia', 'Old English Text MT', serif;
             font-size: 58px; line-height: 1; letter-spacing: .5px; }}
-  .fecha {{ margin-top: 8px; border-top: 3px double #000; border-bottom: 1px solid #000;
+  .titulo + .fecha {{ margin-top: 8px; }}
+  .fecha {{ border-top: 3px double #000; border-bottom: 1px solid #000;
            padding: 4px 0; font: 700 9.5px 'Old Standard TT', Georgia, serif; letter-spacing: 1px;
            display: flex; justify-content: space-between; }}
   .principal {{ display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid #000;
@@ -292,7 +294,7 @@ def armar_html(datos, ancho_base, alto_base):
   .ico {{ font-size: 17px; line-height: 1.25; font-family: 'Segoe UI Symbol', 'DejaVu Sans', sans-serif; }}
 </style></head><body>
   <header class="cabecera">
-    <div class="titulo">{e(CONFIG['titulo'])}</div>
+    {f'<div class="titulo">{e(CONFIG["titulo"])}</div>' if CONFIG.get("mostrar_titulo", True) else ''}
     <div class="fecha"><span>{e(fecha)}</span><span>{edicion}</span></div>
   </header>
   <section class="principal {'' if foto else 'sin-foto'}">
@@ -304,7 +306,7 @@ def armar_html(datos, ancho_base, alto_base):
     </div>
   </section>
   <section class="columnas">{columnas}</section>
-  <footer class="clima">{clima_html}</footer>
+  {f'<footer class="clima">{clima_html}</footer>' if datos.get("clima") is not None else ''}
 </body></html>"""
 
 

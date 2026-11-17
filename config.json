@@ -1,5 +1,7 @@
 {
   "titulo": "La Portada",
+  "mostrar_titulo": false,
+  "mostrar_clima": false,
   "ciudad": "Puerto Montt",
   "latitud": -41.4693,
   "longitud": -72.9424,

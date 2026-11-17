@@ -36,7 +36,7 @@ jobs:
       - name: Publicar en GitHub Pages
         run: |
           mkdir publicar
-          cp salida/portada.png publicar/
+          cp salida/portada.png salida/portada.html publicar/
           touch publicar/.nojekyll
           cat > publicar/index.html <<'HTML'
           <!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width">
