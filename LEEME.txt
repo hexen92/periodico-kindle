@@ -1,0 +1,69 @@
+PERIÓDICO PARA KINDLE
+=====================
+
+Tu computador arma cada día una portada con noticias y el clima, y el Kindle
+la descarga por Wi-Fi a las 6:05 y a las 18:05.
+
+
+1. EN EL COMPUTADOR (Windows)
+-----------------------------
+a) Instala Python 3.10 o superior desde python.org
+   (marca "Add Python to PATH" durante la instalación).
+b) Doble clic en  instalar.bat  (solo la primera vez).
+c) Abre  config.json  con el Bloc de notas y revisa:
+   - "titulo": el nombre de tu diario.
+   - "modelo_kindle": el modelo del Kindle que usarás de periódico.
+   - "secciones": las fuentes de noticias (direcciones RSS) de cada sección.
+     Cada sección tiene varias; se usa la primera que funcione.
+d) Doble clic en  probar.bat : genera una portada y la abre para que la veas.
+   Si alguna sección sale vacía, ejecuta en una terminal:
+       python periodico.py --probar
+   y cambia las fuentes que digan FALLA.
+e) Doble clic en  iniciar.bat  y deja esa ventana abierta.
+   Al iniciar muestra una línea como:
+       El Kindle debe descargar: http://192.168.1.100:8080/portada.png
+   Anota esa IP.
+   Si Windows pregunta por el firewall, permite el acceso en redes privadas.
+
+   Para comprobarlo, abre esa dirección desde el navegador del celular
+   conectado al mismo Wi-Fi: deberías ver la portada.
+
+   Recomendación: en tu router, fija la IP del computador (reserva DHCP)
+   para que no cambie y el Kindle la siga encontrando.
+
+
+2. EN EL KINDLE CON KOREADER (recomendado si también lees en él)
+-----------------------------------------------------------------
+El periódico aparece como pantalla de suspensión: lees normal y, al bloquear
+el Kindle, se ve la portada.
+
+a) Copia la carpeta  kindle/periodico.koplugin  a  koreader/plugins/  del Kindle.
+b) Reinicia KOReader.
+c) Menú → Herramientas (Tools) → Periódico → Dirección: escribe la dirección
+   que muestra periodico.py (por ejemplo http://192.168.1.100:8080/portada.png).
+d) Periódico → Actualizar ahora.
+e) Periódico → Usar como pantalla de suspensión.
+
+Se actualiza solo cuando el Kindle despierta o se conecta al Wi-Fi, si
+pasaron más de 3 horas desde la última descarga y el Wi-Fi está encendido.
+
+
+3. ALTERNATIVA: KINDLE DEDICADO SOLO AL PERIÓDICO (requiere jailbreak y KUAL)
+----------------------------------------------------------------------------
+Se usa el proyecto kindle-dash: https://github.com/pascalw/kindle-dash
+
+a) Descarga la última versión de kindle-dash (sección Releases).
+b) Reemplaza sus archivos  local/env.sh  y  local/fetch-dashboard.sh
+   por los de la carpeta  kindle/kindle-dash/local  de este paquete.
+c) En fetch-dashboard.sh cambia 192.168.1.100 por la IP que anotaste.
+d) Copia la carpeta kindle-dash a la carpeta  extensions  de KUAL en el Kindle.
+e) Desde KUAL, inicia kindle-dash.
+
+Importante:
+- Mientras kindle-dash está activo, el Kindle deja de funcionar como lector:
+  detiene la interfaz de Amazon y solo muestra la portada. Para usarlo como
+  lector otra vez, reinícialo.
+- kindle-dash fue probado en el Kindle 4 NT. En otros modelos puede necesitar
+  ajustes (por ejemplo, la ruta del reloj de activación en dash.sh).
+- Las fuentes del diario se descargan de Google Fonts: el computador necesita
+  internet al generar la portada.

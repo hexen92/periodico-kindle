@@ -1,0 +1,48 @@
+{
+  "titulo": "La Portada",
+  "ciudad": "Puerto Montt",
+  "latitud": -41.4693,
+  "longitud": -72.9424,
+  "zona_horaria": "America/Santiago",
+
+  "modelo_kindle": "paperwhite_7",
+  "_modelos_disponibles": "kindle_4 / kindle_basico_2016 (600x800), paperwhite_7 / paperwhite_10 (1072x1448), oasis (1264x1680), paperwhite_11 (1236x1648)",
+
+  "ancho_diseno": 520,
+  "_ancho_diseno": "Tamaño de letra: 600 = normal, 520 = más grande, 460 = muy grande",
+
+  "horas_actualizacion": [6, 18],
+  "puerto": 8080,
+
+  "secciones": {
+    "principal": {
+      "nombre": "Chile",
+      "fuentes": [
+        "https://www.eldinamo.cl/feed/",
+        "https://www.lanacion.cl/feed/",
+        "https://www.theclinic.cl/feed/"
+      ]
+    },
+    "columna1": {
+      "nombre": "Mundo",
+      "fuentes": [
+        "https://feeds.bbci.co.uk/mundo/rss.xml",
+        "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/america/portada"
+      ]
+    },
+    "columna2": {
+      "nombre": "Tecnología",
+      "fuentes": [
+        "https://www.xataka.com/feedburner.xml",
+        "https://infoweek.biz/feed/"
+      ]
+    },
+    "columna3": {
+      "nombre": "Economía",
+      "fuentes": [
+        "https://www.df.cl/noticias/site/list/port/rss.xml",
+        "https://www.theclinic.cl/feed/"
+      ]
+    }
+  }
+}
