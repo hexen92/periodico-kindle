@@ -48,6 +48,15 @@ Se actualiza solo cuando el Kindle despierta o se conecta al Wi-Fi, si
 pasaron más de 3 horas desde la última descarga y el Wi-Fi está encendido.
 
 
+EL LIBRO DEL DÍA
+----------------
+Además de la portada se genera "periodico.epub": un libro con un capítulo por
+sección (Tecnología, Juegos, Mundo, Economía, Ciencia). El plugin lo descarga
+a la carpeta "Periodico" de tu biblioteca y guarda los 4 más recientes.
+Ábrelo desde Menú → Herramientas → Periódico → Abrir el periódico (libro).
+Las secciones y sus fuentes se cambian en config.json, en la parte "libro".
+
+
 3. ALTERNATIVA: KINDLE DEDICADO SOLO AL PERIÓDICO (requiere jailbreak y KUAL)
 ----------------------------------------------------------------------------
 Se usa el proyecto kindle-dash: https://github.com/pascalw/kindle-dash

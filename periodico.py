@@ -59,7 +59,10 @@ def descargar(url, tiempo=15):
 
 
 def limpiar(texto, largo=None):
-    texto = re.sub(r"<[^>]+>", " ", texto or "")
+    texto = texto or ""
+    # las etiquetas de bloque separan palabras; las de línea (enlaces, negritas) no
+    texto = re.sub(r"(?i)</?(p|br|div|li|ul|ol|h[1-6]|blockquote|tr|td|figure)\b[^>]*>", " ", texto)
+    texto = re.sub(r"<[^>]+>", "", texto)
     texto = html.unescape(texto)
     texto = re.sub(r"\s+", " ", texto).strip()
     # Quita el texto automático de WordPress y similares

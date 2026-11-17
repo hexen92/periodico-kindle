@@ -19,7 +19,6 @@
     "principal": {
       "nombre": "Chile",
       "fuentes": [
-        "https://www.eldinamo.cl/feed/",
         "https://www.lanacion.cl/feed/",
         "https://www.theclinic.cl/feed/"
       ]
@@ -35,7 +34,7 @@
       "nombre": "Tecnología",
       "fuentes": [
         "https://www.xataka.com/feedburner.xml",
-        "https://infoweek.biz/feed/"
+        "https://www.genbeta.com/feedburner.xml"
       ]
     },
     "columna3": {
@@ -55,16 +54,14 @@
         "nombre": "Tecnología",
         "fuentes": [
           "https://www.xataka.com/feedburner.xml",
-          "https://www.genbeta.com/feedburner.xml",
-          "https://infoweek.biz/feed/"
+          "https://www.genbeta.com/feedburner.xml"
         ]
       },
       {
         "nombre": "Juegos",
         "fuentes": [
           "https://www.vidaextra.com/feedburner.xml",
-          "https://www.3djuegos.com/feedburner.xml",
-          "https://vandal.elespanol.com/xml.cgi"
+          "https://www.3djuegos.com/feedburner.xml"
         ]
       },
       {
@@ -85,7 +82,6 @@
         "nombre": "Ciencia",
         "fuentes": [
           "https://www.agenciasinc.es/feed/Noticias",
-          "https://www.agenciasinc.es/feed",
           "https://feeds.bbci.co.uk/mundo/temas/ciencia/rss.xml",
           "https://www.muyinteresante.com/feed/"
         ]
