@@ -23,6 +23,7 @@ import socket
 import sys
 import threading
 import time
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -156,11 +157,16 @@ def clima():
     url = ("https://api.open-meteo.com/v1/forecast"
            f"?latitude={CONFIG['latitud']}&longitude={CONFIG['longitud']}"
            "&daily=weather_code,temperature_2m_max,temperature_2m_min"
-           f"&timezone={CONFIG['zona_horaria']}&forecast_days=7")
-    try:
-        d = json.loads(descargar(url))["daily"]
-    except Exception as e:
-        print(f"  · clima no disponible ({e.__class__.__name__})")
+           f"&timezone={urllib.parse.quote(CONFIG['zona_horaria'], safe='')}&forecast_days=7")
+    d = None
+    for intento in range(4):  # el servicio a veces falla una vez; reintenta antes de rendirse
+        try:
+            d = json.loads(descargar(url, 25))["daily"]
+            break
+        except Exception as e:
+            print(f"  · clima: intento {intento + 1} falló ({e.__class__.__name__}: {e})")
+            time.sleep(5 * (intento + 1))
+    if d is None:
         return []
     dias = []
     for fecha, cod, tmax, tmin in zip(d["time"], d["weather_code"],
@@ -245,7 +251,7 @@ def armar_html(datos, ancho_base, alto_base):
 
     return f"""<!doctype html><html lang="es"><head><meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Old+Standard+TT:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Old+Standard+TT:wght@400;700&family=Source+Serif+4:wght@400;600&display=block" rel="stylesheet">
 <style>
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   html, body {{ width: {ancho_base}px; height: {alto_base}px; background: #fff; color: #000; overflow: hidden; }}
