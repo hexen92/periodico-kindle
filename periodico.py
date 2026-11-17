@@ -243,7 +243,7 @@ def armar_html(datos, ancho_base, alto_base):
             if p.get("imagen") else "")
     columnas = "".join(
         f'<div class="col"><div class="kicker">{e(c["seccion"])}</div>'
-        + "".join(f'<article><h3>{e(n["titulo"])}</h3><p>{e(limpiar(n["resumen"], 400))}</p></article>'
+        + "".join(f'<article><h3>{e(n["titulo"])}</h3><p>{e(limpiar(n["resumen"], int(CONFIG.get("largo_resumen", 170))))}</p></article>'
                   for n in c["noticias"])
         + "</div>" for c in datos["columnas"])
     clima_html = "".join(f"""
@@ -276,13 +276,13 @@ def armar_html(datos, ancho_base, alto_base):
        display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }}
   .sin-foto h2 {{ font-size: 36px; -webkit-line-clamp: 4; }}
   .principal p {{ font-size: 11.5px; line-height: 1.38;
-                 display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }}
+                 display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }}
   .columnas {{ flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); padding: 10px 0; min-height: 0; }}
   .col {{ padding: 0 10px; border-left: 1px solid #000; overflow: hidden; }}
   .col:first-child {{ padding-left: 0; border-left: 0; }}
   .col:last-child {{ padding-right: 0; }}
-  h3 {{ font: 700 16.5px/1.15 'Old Standard TT', Georgia, serif; margin-bottom: 6px;
-       display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }}
+  h3 {{ font: 700 15.5px/1.15 'Old Standard TT', Georgia, serif; margin-bottom: 6px;
+       display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }}
   .col article + article {{ margin-top: 10px; padding-top: 10px; border-top: 1px solid #999; }}
   .col p {{ font-size: 10px; line-height: 1.38; color: #222;
            display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }}
@@ -320,10 +320,14 @@ document.querySelectorAll('.col').forEach(col => {
     const h = art.querySelector('h3'), p = art.querySelector('p');
     const linea = parseFloat(getComputedStyle(p).lineHeight);
     const lineas = Math.floor((fondo - p.getBoundingClientRect().top) / linea);
-    if (h.getBoundingClientRect().bottom < fondo && lineas >= 2) {
-      p.style.webkitLineClamp = lineas;
+    if (h.getBoundingClientRect().bottom <= fondo) {
+      // si no caben al menos 2 líneas de resumen, queda solo el titular
+      if (lineas >= 2) p.style.webkitLineClamp = lineas; else p.remove();
     } else {
-      art.remove();
+      // el titular tampoco cabe entero: se recorta si caben al menos 2 líneas
+      const lh = parseFloat(getComputedStyle(h).lineHeight);
+      const lineasH = Math.floor((fondo - h.getBoundingClientRect().top) / lh);
+      if (lineasH >= 2) { h.style.webkitLineClamp = lineasH; p.remove(); } else art.remove();
     }
     lleno = true;
   });
