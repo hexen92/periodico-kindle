@@ -89,9 +89,14 @@ def leer_rss(url):
     for item in raiz.iter():
         if _local(item.tag) not in ("item", "entry"):
             continue
-        titulo, resumen, imagen = "", "", None
+        titulo, resumen, imagen, html_completo, enlace = "", "", None, "", ""
         for hijo in item:
             nombre = _local(hijo.tag)
+            if nombre in ("description", "summary", "encoded", "content") and hijo.text \
+                    and len(hijo.text) > len(html_completo):
+                html_completo = hijo.text  # el texto más largo: suele ser el artículo completo
+            if nombre == "link":
+                enlace = (hijo.text or hijo.get("href") or "").strip() or enlace
             if nombre == "title":
                 titulo = limpiar(hijo.text)
             elif nombre in ("description", "summary", "encoded", "content") and not resumen:
@@ -110,14 +115,19 @@ def leer_rss(url):
                     if sub.get("url") and not imagen:
                         imagen = sub.get("url")
         if titulo:
-            noticias.append({"titulo": titulo, "resumen": resumen,
-                             "imagen": imagen, "fuente": fuente})
+            noticias.append({"titulo": titulo, "resumen": resumen, "imagen": imagen,
+                             "fuente": fuente, "html": html_completo, "enlace": enlace})
     return noticias
 
 
-def noticias_de(seccion, cantidad=1, con_imagen=False):
+def noticias_de(seccion, cantidad=1, con_imagen=False, cache={}):
     """Prueba las fuentes en orden y usa la primera que responda."""
     for url in seccion["fuentes"]:
+        if url in cache:
+            lista = list(cache[url])
+            if con_imagen:
+                lista.sort(key=lambda n: n["imagen"] is None)
+            return lista[:cantidad]
         try:
             lista = leer_rss(url)
         except Exception as e:
@@ -125,6 +135,7 @@ def noticias_de(seccion, cantidad=1, con_imagen=False):
             continue
         if not lista:
             continue
+        cache[url] = list(lista)
         if con_imagen:
             lista.sort(key=lambda n: n["imagen"] is None)  # primero las que tienen foto
         return lista[:cantidad]
@@ -413,7 +424,9 @@ def segundos_hasta_proxima():
 
 
 def probar_fuentes():
-    for clave, s in CONFIG["secciones"].items():
+    todas = list(CONFIG["secciones"].items())
+    todas += [(f"libro{i}", s) for i, s in enumerate(CONFIG.get("libro", {}).get("secciones", []))]
+    for clave, s in todas:
         print(f"\n{s['nombre']}:")
         for url in s["fuentes"]:
             try:
@@ -424,24 +437,40 @@ def probar_fuentes():
                 print(f"  FALLA {url}  ({e.__class__.__name__}: {e})")
 
 
+def generar_todo(solo_libro=False):
+    """Genera la portada y, si está activado, el libro EPUB."""
+    if not solo_libro:
+        generar()
+    if CONFIG.get("libro", {}).get("activar", False):
+        import libro
+        portada = SALIDA / "portada.png"
+        SALIDA.mkdir(exist_ok=True)
+        try:
+            libro.generar_libro(SALIDA / "periodico.epub", portada if portada.exists() else None)
+        except Exception as e:
+            print(f"No se pudo armar el libro ({e.__class__.__name__}: {e})")
+
+
 def main():
     args = sys.argv[1:]
     if "--probar" in args:
         return probar_fuentes()
     if "--ejemplo" in args:
         return generar(ejemplo=True)
+    if "--libro" in args:
+        return generar_todo(solo_libro=True)
     if "--una-vez" in args:
-        return generar()
+        return generar_todo()
 
     SALIDA.mkdir(exist_ok=True)
-    generar()
+    generar_todo()
     servir()
     while True:
         espera = segundos_hasta_proxima()
         print(f"Próxima actualización en {espera / 3600:.1f} h. Deja esta ventana abierta.")
         time.sleep(espera + 5)
         try:
-            generar()
+            generar_todo()
         except Exception as e:
             print(f"No se pudo actualizar ({e}). Se mantiene la portada anterior.")
 

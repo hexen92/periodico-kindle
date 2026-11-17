@@ -30,17 +30,23 @@ jobs:
           python -m playwright install --with-deps chromium
           sudo apt-get install -y -q fonts-dejavu-core fonts-noto-color-emoji
 
-      - name: Generar portada
+      - name: Revisar fuentes de noticias
+        continue-on-error: true
+        run: python periodico.py --probar
+
+      - name: Generar portada y libro
         run: python periodico.py --una-vez
 
       - name: Publicar en GitHub Pages
         run: |
           mkdir publicar
           cp salida/portada.png salida/portada.html publicar/
+          if [ -f salida/periodico.epub ]; then cp salida/periodico.epub publicar/; fi
           touch publicar/.nojekyll
           cat > publicar/index.html <<'HTML'
           <!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width">
           <title>La Portada</title><body style="margin:0;background:#fff">
+          <p style="text-align:center;font:16px serif"><a href="periodico.epub">Descargar el libro (EPUB)</a></p>
           <img src="portada.png" style="width:100%;max-width:800px;display:block;margin:auto">
           HTML
           cd publicar
